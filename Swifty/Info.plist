@@ -18,12 +18,12 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Allow us to track your activity across other companie&apos;s apps and websites?</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Allow us to track your activity across other companie&apos;s apps and websites?</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -52,20 +52,21 @@
 		<dict>
 			<key>Document Role</key>
 			<string>Editor</string>
-			<key>URL identifier</key>
-			<string>io.branch.swifty</string>
 			<key>URL Schemes</key>
 			<array>
 				<string>aliciachao</string>
 			</array>
+			<key>URL identifier</key>
+			<string>io.branch.alicia</string>
 		</dict>
 	</array>
 	<key>branch_key</key>
-	<dict/>
-	<key>live</key>
-	<string>key_live_aj9ya3WxzvCsgwgDXVGDajkduzd5xGJg</string>
-	<key>test</key>
-	<string>key_test_ej8wf27BDFwDnwht63jrildmvAd9uGNy</string>
+	<dict>
+		<key>live</key>
+		<string>key_live_aj9ya3WxzvCsgwgDXVGDajkduzd5xGJg</string>
+		<key>test</key>
+		<string>key_test_ej8wf27BDFwDnwht63jrildmvAd9uGNy</string>
+	</dict>
 	<key>branch_universal_link_domains</key>
 	<array>
 		<string>swifty.app.link</string>

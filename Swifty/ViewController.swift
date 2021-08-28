@@ -11,25 +11,25 @@ import Branch
 import AdSupport
 import AppTrackingTransparency
 
-protocol ViewDelegate {
-    func didTapCreateDeepLink(_ view: ViewController, sender: UIButton)
-    func didTapReadDeepLinkData(_ view: ViewController, sender: UIButton)
-    func didTapRouteToDeepLinkItem(_ view: ViewController, sender: UIButton)
-    func didTapShareDeepLink(_ view: ViewController, sender: UIButton)
-    func didTapToggleUserTracking(_ view: ViewController, sender: UIButton)
-    func didTapTriggerATTPrompt(_ view: ViewController, sender: UIButton)
-    func didTapLogin(_ view: ViewController, sender: UIButton)
-    func didTapLogout(_ view: ViewController, sender: UIButton)
-    func didTapCommerceEvent(_ view: ViewController, sender: UIButton)
-    func didTapContentEvent(_ view: ViewController, sender: UIButton)
-    func didTapLifeCycleEvent(_ view: ViewController, sender: UIButton)
-    func didTapEvent(_ view: ViewController, sender: UIButton)
-}
+//protocol ViewDelegate {
+//    func didTapCreateDeepLink(_ view: ViewController, sender: UIButton)
+//    func didTapReadDeepLinkData(_ view: ViewController, sender: UIButton)
+//    func didTapRouteToDeepLinkItem(_ view: ViewController, sender: UIButton)
+//    func didTapShareDeepLink(_ view: ViewController, sender: UIButton)
+//    func didTapToggleUserTracking(_ view: ViewController, sender: UIButton)
+//    func didTapTriggerATTPrompt(_ view: ViewController, sender: UIButton)
+//    func didTapLogin(_ view: ViewController, sender: UIButton)
+//    func didTapLogout(_ view: ViewController, sender: UIButton)
+//    func didTapCommerceEvent(_ view: ViewController, sender: UIButton)
+//    func didTapContentEvent(_ view: ViewController, sender: UIButton)
+//    func didTapLifeCycleEvent(_ view: ViewController, sender: UIButton)
+//    func didTapEvent(_ view: ViewController, sender: UIButton)
+//}
 
 class ViewController: UIViewController {
         
     //MARK: Properties
-    var delegate: ViewDelegate?
+//    var delegate: ViewDelegate?
     
     let buo = BranchUniversalObject()
     let lp = BranchLinkProperties()
@@ -285,42 +285,201 @@ class ViewController: UIViewController {
             logoutButton.widthAnchor.constraint(equalToConstant: 160),
         ])
         
-        //MARK: Actions
-        func didTapCreateDeepLink(_ sender: UIButton) {
-            delegate?.didTapCreateDeepLink(self, sender: sender)
+        // Generates a deep link within your app
+        func didTapCreateDeepLink(_ view: ViewController, sender: UIButton) {
+            // Create Content Reference (Set BUO Properties)
+            buo.title = "My Content Title"
+            buo.contentDescription = "My Content Description"
+            buo.imageUrl = "https://branch.io/img/logo-dark.svg"
+            buo.publiclyIndex = true
+            buo.locallyIndex = true
+            buo.contentMetadata.customMetadata["key1"] = "value1"
+            buo.canonicalUrl = "https://help.branch.io"
+            
+            // Create Link Reference (Set Link Properties)
+            lp.channel = "in-app"
+            lp.feature = "create branch link"
+            lp.campaign = "creation"
+            lp.stage = "new user"
+            lp.tags = ["one", "two", "three"]
+
+            lp.addControlParam("$desktop_url", withValue: "http://example.com/desktop")
+            lp.addControlParam("$ios_url", withValue: "http://example.com/ios")
+            lp.addControlParam("$ipad_url", withValue: "http://example.com/ios")
+            lp.addControlParam("$android_url", withValue: "http://example.com/android")
+
+            lp.addControlParam("custom_data", withValue: "yes")
+            lp.addControlParam("look_at", withValue: "this")
+            lp.addControlParam("nav_to", withValue: "over here")
+            lp.addControlParam("random", withValue: UUID.init().uuidString)
+            
+            // Create Deep Link
+            buo.getShortUrl(with: lp) { url, error in
+                view.textView.text = "Created Deep Link: \n" + (url ?? "")
+            }
         }
-        func didTapReadDeepLinkData(_ sender: UIButton) {
-            delegate?.didTapReadDeepLinkData(self, sender: sender)
+        
+        // Retrieve Branch data from a deep link
+        // Best practice: receive data from the listener (to prevent a race condition)
+        // listener: initSession (within AppDelegate didFinishLaunchingWithOptions)
+        func didTapReadDeepLinkData(_ view: ViewController, sender: UIButton) {
+            // Retrieve Latest Referring Parameters
+            let sessionParams = Branch.getInstance().getLatestReferringParams()
+
+            view.textView.text = "Latest Referring Parameters: \n" +  ((sessionParams as NSDictionary?)?.description ?? "No Latest Referring Parameters")
         }
-        func didTapRouteToDeepLinkItem(_ sender: UIButton) {
-            delegate?.didTapRouteToDeepLinkItem(self, sender: sender)
+        
+        
+        // Change color, text, wtv
+        func didTapRouteToDeepLinkData(_ view: ViewController, sender: UIButton) {
+            view.routeLink.backgroundColor = .systemGray
         }
-        func didTapShareDeepLink(_ sender: UIButton) {
-            delegate?.didTapShareDeepLink(self, sender: sender)
+
+        
+        // Will generate a Branch deep link and tag it with the channel the user selects
+        func didTapShareDeepLink(_ view: ViewController, sender: UIButton) {
+            // Create Content Reference (Set BUO Properties)
+            buo.title = "My Content Title"
+            buo.contentDescription = "My Content Description"
+            buo.imageUrl = "https://branch.io/img/logo-dark.svg"
+            buo.publiclyIndex = true
+            buo.locallyIndex = true
+            buo.contentMetadata.customMetadata["key1"] = "value1"
+            buo.canonicalUrl = "https://help.branch.io"
+            
+            // Create Link Reference (Set Link Properties)
+            lp.channel = "in-app"
+            lp.feature = "create branch link"
+            lp.campaign = "creation"
+            lp.stage = "new user"
+            lp.tags = ["one", "two", "three"]
+
+            lp.addControlParam("$desktop_url", withValue: "http://example.com/desktop")
+            lp.addControlParam("$ios_url", withValue: "http://example.com/ios")
+            lp.addControlParam("$ipad_url", withValue: "http://example.com/ios")
+            lp.addControlParam("$android_url", withValue: "http://example.com/android")
+
+            lp.addControlParam("custom_data", withValue: "yes")
+            lp.addControlParam("look_at", withValue: "this")
+            lp.addControlParam("nav_to", withValue: "over here")
+            lp.addControlParam("random", withValue: UUID.init().uuidString)
+            
+            // Uses Deep Link Properties
+
+            // Call Share Sheet
+            let message = "Check out this link"
+            buo.showShareSheet(with: lp, andShareText: message, from: self) { (activityType, completed, error) in
+                // activityType = Sharing Method (Messages || CopyToPasteboard || Mail || etc)
+                // completed = bool, Share Comleted/Not Completed
+                view.textView.text = "Share Sheet Completed: \n" + (activityType ?? "")
+            }
         }
-        func didTapCommerceEvent(_ sender: UIButton) {
-            delegate?.didTapEvent(self, sender: sender)
+        
+        func didTapCommerceEvent(_ view: ViewController, sender: UIButton){
+            // Create Content Reference (BUO Properties)
+            buo.title = "My Content Title"
+            buo.canonicalUrl = "https://help.branch.io"
+            buo.contentMetadata.contentSchema     = .commerceProduct
+            buo.contentMetadata.productName       = "Nike Airforce 1s"
+            buo.contentMetadata.quantity          = 1
+            buo.contentMetadata.price             = 103.20
+            buo.contentMetadata.currency          = .USD
+            buo.contentMetadata.sku               = "1994320302"
+            buo.contentMetadata.productName       = "my_product_name1"
+            buo.contentMetadata.productBrand      = "my_prod_Brand1"
+            buo.contentMetadata.productCategory   = .apparel
+            buo.contentMetadata.productVariant    = "XS"
+            buo.contentMetadata.condition         = .new
+            
+            // Track Content
+            let event = BranchEvent.standardEvent(.purchase)
+            // Add the BranchUniversalObject with the content (do not add an empty branchUniversalObject):
+            event.contentItems     = [ buo ]
+            // Add relevant event data:
+            event.alias            = "purchase"
+            event.transactionID    = "12344555"
+            event.currency         = .USD
+            event.revenue          = 1.5
+            event.shipping         = 10.2
+            event.tax              = 12.3
+            event.coupon           = "test_coupon"
+            event.affiliation      = "test_affiliation"
+            event.eventDescription = "Event_description"
+            event.searchQuery      = "item 123"
+            event.customData       = [
+                "Custom_Event_Property_Key1": "Custom_Event_Property_val1",
+                "Custom_Event_Property_Key2": "Custom_Event_Property_val2"
+            ]
+            event.logEvent()
+            view.textView.text = "Commerce Event Logged: \n" + buo.dictionary().description
         }
-        func didTapContentEvent(_ sender: UIButton) {
-            delegate?.didTapEvent(self, sender: sender)
+        func didTapContentEvent(_ view: ViewController, sender: UIButton){
+            let event = BranchEvent.standardEvent(.viewItem)
+            event.alias = "Pageview"
+            event.eventDescription = "home_page"
+            event.customData["Custom_Property_Key1"] = "Custom_Property_val1"
+            event.logEvent()
+            view.textView.text = "Content Event Logged: \n" + event.dictionary().description
         }
-        func didTapLifeCycleEvent(_ sender: UIButton) {
-            delegate?.didTapEvent(self, sender: sender)
+        func didTapLifeCycleEvent(_ view: ViewController, sender: UIButton){
+            let event = BranchEvent.standardEvent(.completeRegistration)
+            event.alias = "complete registration"
+            event.customData["content_type"] = "email_registered"
+            event.logEvent()
+            view.textView.text = "LifeCycle Event Logged: \n" + event.dictionary().description
         }
-        func didTapCustomEvent(_ sender: UIButton) {
-            delegate?.didTapEvent(self, sender: sender)
+        func didTapCustomEvent(_ view: ViewController, sender: UIButton){
+            buo.contentMetadata = BranchContentMetadata()
+            buo.contentMetadata.productName = "product_xyz"
+            buo.contentMetadata.quantity = 1
+            let event = BranchEvent(name: "coupon_applied")
+            event.contentItems = [buo]
+            event.transactionID = UUID().uuidString
+            event.logEvent()
+            view.textView.text = "Custom Event Logged: \n" + event.dictionary().description
         }
-        func didTapToggleUserTracking(_ sender: UIButton) {
-            delegate?.didTapToggleUserTracking(self, sender: sender)
+        
+        func didTapToggleUserTracking(_ view: ViewController, sender: UIButton) {
+            // Disable Tracking -> Deinitializes Branch Session
+            switch Branch.trackingDisabled() {
+            case false:
+                Branch.setTrackingDisabled(true)
+                view.textView.text = "Tracking Disabled"
+            case true:
+                Branch.setTrackingDisabled(false)
+                view.textView.text = "Tracking Enabled"
+            }
         }
-        func didTapTriggerATTPrompt(_ sender: UIButton) {
-            delegate?.didTapToggleUserTracking(self, sender: sender)
+        func didTapTriggerATTPrompt(_ view: ViewController, sender: UIButton) {
+            if (ATTrackingManager.trackingAuthorizationStatus == .notDetermined) {
+                ATTrackingManager.requestTrackingAuthorization { (status) in
+    //                Branch.getInstance().handleATTAuthorizationStatus(status.rawValue)
+                    switch status {
+                    case .authorized:
+                        print("Authorized")
+                        let idfa = ASIdentifierManager.shared().advertisingIdentifier
+                        print("IDFA: " + idfa.uuidString)
+                    case .denied,
+                         .notDetermined,
+                         .restricted:
+                        print("Not Authorized")
+                        break
+                    @unknown default:
+                        print("Unknown")
+                        break
+                    }
+                }
+            }
         }
-        func didTapLogin(_ sender: UIButton) {
-            delegate?.didTapLogin(self, sender: sender)
+        func didTapLogin(_ view: ViewController, sender: UIButton) {
+            // Set Identity
+            Branch.getInstance().setIdentity("your_user_id")
+            view.textView.text = "Identity Set"
         }
-        func didTapLogout(_ sender: UIButton) {
-            delegate?.didTapLogout(self, sender: sender)
+        func didTapLogout(_ view: ViewController, sender: UIButton) {
+            // Log user out -> Deinitializes Branch Session
+            Branch.getInstance().logout()
+            view.textView.text = "Session Logout"
         }
     }
     override func viewDidLoad() {
@@ -334,218 +493,3 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
     }
 }
-
-
-//MARK: View Delegate
-extension ViewController: ViewDelegate {
-    
-    // Generates a deep link within your app
-    func didTapCreateDeepLink(_ view: ViewController, sender: UIButton) {
-        // Create Content Reference (Set BUO Properties)
-        buo.title = "My Content Title"
-        buo.contentDescription = "My Content Description"
-        buo.imageUrl = "https://branch.io/img/logo-dark.svg"
-        buo.publiclyIndex = true
-        buo.locallyIndex = true
-        buo.contentMetadata.customMetadata["key1"] = "value1"
-        buo.canonicalUrl = "https://help.branch.io"
-        
-        // Create Link Reference (Set Link Properties)
-        lp.channel = "in-app"
-        lp.feature = "create branch link"
-        lp.campaign = "creation"
-        lp.stage = "new user"
-        lp.tags = ["one", "two", "three"]
-
-        lp.addControlParam("$desktop_url", withValue: "http://example.com/desktop")
-        lp.addControlParam("$ios_url", withValue: "http://example.com/ios")
-        lp.addControlParam("$ipad_url", withValue: "http://example.com/ios")
-        lp.addControlParam("$android_url", withValue: "http://example.com/android")
-
-        lp.addControlParam("custom_data", withValue: "yes")
-        lp.addControlParam("look_at", withValue: "this")
-        lp.addControlParam("nav_to", withValue: "over here")
-        lp.addControlParam("random", withValue: UUID.init().uuidString)
-        
-        // Create Deep Link
-        buo.getShortUrl(with: lp) { url, error in
-            view.textView.text = "Created Deep Link: \n" + (url ?? "")
-        }
-    }
-    
-    // Retrieve Branch data from a deep link
-    // Best practice: receive data from the listener (to prevent a race condition)
-    // listener: initSession (within AppDelegate didFinishLaunchingWithOptions)
-    func didTapReadDeepLinkData(_ view: ViewController, sender: UIButton) {
-        // Retrieve Latest Referring Parameters
-        let sessionParams = Branch.getInstance().getLatestReferringParams()
-
-        view.textView.text = "Latest Referring Parameters: \n" +  ((sessionParams as NSDictionary?)?.description ?? "No Latest Referring Parameters")
-    }
-    
-    
-    // Change color, text, wtv
-    func didTapRouteToDeepLinkData(_ view: ViewController, sender: UIButton) {
-        view.routeLink.backgroundColor = .systemGray
-    }
-
-    
-    // Will generate a Branch deep link and tag it with the channel the user selects
-    func didTapShareDeepLink(_ view: ViewController, sender: UIButton) {
-        // Create Content Reference (Set BUO Properties)
-        buo.title = "My Content Title"
-        buo.contentDescription = "My Content Description"
-        buo.imageUrl = "https://branch.io/img/logo-dark.svg"
-        buo.publiclyIndex = true
-        buo.locallyIndex = true
-        buo.contentMetadata.customMetadata["key1"] = "value1"
-        buo.canonicalUrl = "https://help.branch.io"
-        
-        // Create Link Reference (Set Link Properties)
-        lp.channel = "in-app"
-        lp.feature = "create branch link"
-        lp.campaign = "creation"
-        lp.stage = "new user"
-        lp.tags = ["one", "two", "three"]
-
-        lp.addControlParam("$desktop_url", withValue: "http://example.com/desktop")
-        lp.addControlParam("$ios_url", withValue: "http://example.com/ios")
-        lp.addControlParam("$ipad_url", withValue: "http://example.com/ios")
-        lp.addControlParam("$android_url", withValue: "http://example.com/android")
-
-        lp.addControlParam("custom_data", withValue: "yes")
-        lp.addControlParam("look_at", withValue: "this")
-        lp.addControlParam("nav_to", withValue: "over here")
-        lp.addControlParam("random", withValue: UUID.init().uuidString)
-        
-        // Uses Deep Link Properties
-
-        // Call Share Sheet
-        let message = "Check out this link"
-        buo.showShareSheet(with: lp, andShareText: message, from: self) { (activityType, completed, error) in
-            // activityType = Sharing Method (Messages || CopyToPasteboard || Mail || etc)
-            // completed = bool, Share Comleted/Not Completed
-            view.textView.text = "Share Sheet Completed: \n" + (activityType ?? "")
-        }
-    }
-    
-    func didTapCommerceEvent(_ view: ViewController, sender: UIButton){
-        // Create Content Reference (BUO Properties)
-        buo.title = "My Content Title"
-        buo.canonicalUrl = "https://help.branch.io"
-        buo.contentMetadata.contentSchema     = .commerceProduct
-        buo.contentMetadata.productName       = "Nike Airforce 1s"
-        buo.contentMetadata.quantity          = 1
-        buo.contentMetadata.price             = 103.20
-        buo.contentMetadata.currency          = .USD
-        buo.contentMetadata.sku               = "1994320302"
-        buo.contentMetadata.productName       = "my_product_name1"
-        buo.contentMetadata.productBrand      = "my_prod_Brand1"
-        buo.contentMetadata.productCategory   = .apparel
-        buo.contentMetadata.productVariant    = "XS"
-        buo.contentMetadata.condition         = .new
-        
-        // Track Content
-        let event = BranchEvent.standardEvent(.purchase)
-        // Add the BranchUniversalObject with the content (do not add an empty branchUniversalObject):
-        event.contentItems     = [ buo ]
-        // Add relevant event data:
-        event.alias            = "purchase"
-        event.transactionID    = "12344555"
-        event.currency         = .USD
-        event.revenue          = 1.5
-        event.shipping         = 10.2
-        event.tax              = 12.3
-        event.coupon           = "test_coupon"
-        event.affiliation      = "test_affiliation"
-        event.eventDescription = "Event_description"
-        event.searchQuery      = "item 123"
-        event.customData       = [
-            "Custom_Event_Property_Key1": "Custom_Event_Property_val1",
-            "Custom_Event_Property_Key2": "Custom_Event_Property_val2"
-        ]
-        event.logEvent()
-        view.textView.text = "Commerce Event Logged: \n" + buo.dictionary().description
-    }
-    func didTapContentEvent(_ view: ViewController, sender: UIButton){
-        let event = BranchEvent.standardEvent(.viewItem)
-        event.alias = "Pageview"
-        event.eventDescription = "home_page"
-        event.customData["Custom_Property_Key1"] = "Custom_Property_val1"
-        event.logEvent()
-        view.textView.text = "Content Event Logged: \n" + event.dictionary().description
-    }
-    func didTapLifeCycleEvent(_ view: ViewController, sender: UIButton){
-        let event = BranchEvent.standardEvent(.completeRegistration)
-        event.alias = "complete registration"
-        event.customData["content_type"] = "email_registered"
-        event.logEvent()
-        view.textView.text = "LifeCycle Event Logged: \n" + event.dictionary().description
-    }
-    func didTapCustomEvent(_ view: ViewController, sender: UIButton){
-        buo.contentMetadata = BranchContentMetadata()
-        buo.contentMetadata.productName = "product_xyz"
-        buo.contentMetadata.quantity = 1
-        let event = BranchEvent(name: "coupon_applied")
-        event.contentItems = [buo]
-        event.transactionID = UUID().uuidString
-        event.logEvent()
-        view.textView.text = "Custom Event Logged: \n" + event.dictionary().description
-    }
-    
-    func didTapToggleUserTracking(_ view: ViewController, sender: UIButton) {
-        // Disable Tracking -> Deinitializes Branch Session
-        switch Branch.trackingDisabled() {
-        case false:
-            Branch.setTrackingDisabled(true)
-            view.textView.text = "Tracking Disabled"
-        case true:
-            Branch.setTrackingDisabled(false)
-            view.textView.text = "Tracking Enabled"
-        }
-    }
-    func didTapTriggerATTPrompt(_ view: ViewController, sender: UIButton) {
-        if (ATTrackingManager.trackingAuthorizationStatus == .notDetermined) {
-            ATTrackingManager.requestTrackingAuthorization { (status) in
-//                Branch.getInstance().handleATTAuthorizationStatus(status.rawValue)
-                switch status {
-                case .authorized:
-                    print("Authorized")
-                    let idfa = ASIdentifierManager.shared().advertisingIdentifier
-                    print("IDFA: " + idfa.uuidString)
-                case .denied,
-                     .notDetermined,
-                     .restricted:
-                    print("Not Authorized")
-                    break
-                @unknown default:
-                    print("Unknown")
-                    break
-                }
-            }
-        }
-    }
-    func didTapLogin(_ view: ViewController, sender: UIButton) {
-        // Set Identity
-        Branch.getInstance().setIdentity("your_user_id")
-        view.textView.text = "Identity Set"
-    }
-    func didTapLogout(_ view: ViewController, sender: UIButton) {
-        // Log user out -> Deinitializes Branch Session
-        Branch.getInstance().logout()
-        view.textView.text = "Session Logout"
-    }
-}
-
-
-//MARK: Styling
-//call styleButton() on UIButton() in Life Cycle Method: loadView()
-//extension UIButton {
-//    func styleButton() {
-//        self.layer.backgroundColor = .systemBlue
-//        self.layer.cornerRadius = 8
-//        self.showsTouchWhenHighlighted = true
-//        self.titleLabel?.numberOfLines = 0
-//        self.titleLabel?.textAlignment = .center
-//    }
-//}
